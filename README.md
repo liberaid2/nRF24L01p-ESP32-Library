@@ -1,5 +1,26 @@
 # nRF24L01p Library for ESP32 (esp-idf)
-## Usage example
+## Simple usage example
+```cpp
+/* Sender */
+CNRFLib nrf(GPIO_NUM_16, GPIO_NUM_17);
+nrf.AttachToSpiBus(HSPI_HOST);
+uint8_t buff[32] = {0};
+nrf.Begin(nrf_tx_mode);
+nrf.Send(buff, 32);
+
+.....................................
+
+/* Receiver */
+CNRFLib nrf(GPIO_NUM_16, GPIO_NUM_17);
+nrf.AttachToSpiBus(HSPI_HOST);
+uint8_t buff[32] = {0};
+nrf.Begin(nrf_rx_mode);
+while(!nrf.IsRxDataAvailable())
+    ;
+nrf.Read(buff, 32);
+```
+
+## Full usage example
 ```cpp
 /* Include library */
 #include "nrf24l01p_lib.h"
@@ -21,8 +42,8 @@
 #define NRF_MODE NRF_MODE_SENDER
 
 void NrfTest(){
-    /* Init spi bus */
-    spi_bus_config_t buscfg;
+    	/* Init spi bus */
+    	spi_bus_config_t buscfg;
 	memset(&buscfg, 0, sizeof(buscfg));
 
 	buscfg.miso_io_num = SPI_MISO;
@@ -54,7 +75,7 @@ void NrfTest(){
 		for(int i = 0; i < 32; i++)
 			buff[i] = i;
 
-        /* Init library with Begin() */
+        	/* Init library with Begin() */
 		nrf.Begin(nrf_tx_mode);
 		
 		/* Set addr to which we will send data */
@@ -74,7 +95,7 @@ void NrfTest(){
 	} else {
 		printf("Rx mode\n");
 
-        /* Init library */
+        	/* Init library */
 		nrf.Begin(nrf_rx_mode);
 		/* Set pipe0 addr to listen to packets with this addr */
 		nrf.SetPipeAddr(0, addr, 5);
@@ -82,11 +103,11 @@ void NrfTest(){
 		while(1){
 			vTaskDelay(pdMS_TO_TICKS(1));
 
-            /* Check for available packets in rx buffer */
+            		/* Check for available packets in rx buffer */
 			if(!nrf.IsRxDataAvailable())
 				continue;
 
-            /* Read it */
+            		/* Read it */
 			nrf.Read(buff, 32);
 			printf("Received: ");
 			for(int i = 0; i < 32; i++)
